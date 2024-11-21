@@ -2,8 +2,8 @@
 TARGET 			= linux-osal-example
 
 #设置编译器
-#CC    			= arm-linux-gnueabihf-gcc
-CC     			= gcc
+CROSS_COMPILE				?= arm-linux-gnueabihf-
+# CROSS_COMPILE				?=
 
 #获取当前工作目录
 TOP=.
@@ -52,25 +52,25 @@ C_DEP			= $(patsubst %.$(EXT), $(OBJ_DIR)/%.d,$(C_SRC_NODIR))
 
 all:$(C_OBJ)
 	@echo "linking object to $(TARGET).elf"
-	@$(CC) $(C_OBJ) -o $(TARGET).elf -Wl,-Map=$(TARGET).map $(LFLAGS)
-	@size $(TARGET).elf # 打印 elf 文件 size 信息
+	@$(CROSS_COMPILE)gcc $(C_OBJ) -o $(TARGET).elf -Wl,-Map=$(TARGET).map $(LFLAGS)
+	@$(CROSS_COMPILE)size $(TARGET).elf # 打印 elf 文件 size 信息
 	@echo "generating binary file $(TARGET).bin"
-	@objcopy -O binary $(TARGET).elf $(TARGET).bin
+	@$(CROSS_COMPILE)objcopy -O binary $(TARGET).elf $(TARGET).bin
 	@echo "generating hex file $(TARGET).hex"
-	@objcopy -O ihex $(TARGET).elf $(TARGET).hex
+	@$(CROSS_COMPILE)objcopy -O ihex $(TARGET).elf $(TARGET).hex
 	@echo "generating assembly file $(TARGET).asm"
-	@objdump -d $(TARGET).elf > $(TARGET).asm
+	@$(CROSS_COMPILE)objdump -d $(TARGET).elf > $(TARGET).asm
 
 $(OBJ_DIR)/%.o:%.$(EXT)
 	@mkdir -p obj
 	@echo "building $<"
-	@$(CC) -c $(CFLAGS) $(INC_FLAGS) -o $@ $<
+	@$(CROSS_COMPILE)gcc -c $(CFLAGS) $(INC_FLAGS) -o $@ $<
 
 -include $(C_DEP)
 $(OBJ_DIR)/%.d:%.$(EXT)
 	@mkdir -p obj
 	@echo "making $@"
-	@set -e;rm -f $@;$(CC) -MM $(CFLAGS) $(INC_FLAGS) $< > $@.$$$$;sed 's,\($*\)\.o[ :]*,$(OBJ_DIR)/\1.o $(OBJ_DIR)/\1.d:,g' < $@.$$$$ > $@;rm -f $@.$$$$
+	@set -e;rm -f $@;$(CROSS_COMPILE)gcc -MM $(CFLAGS) $(INC_FLAGS) $< > $@.$$$$;sed 's,\($*\)\.o[ :]*,$(OBJ_DIR)/\1.o $(OBJ_DIR)/\1.d:,g' < $@.$$$$ > $@;rm -f $@.$$$$
 
 clean:
 	-rm -f obj/*
