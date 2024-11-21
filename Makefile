@@ -53,7 +53,13 @@ C_DEP			= $(patsubst %.$(EXT), $(OBJ_DIR)/%.d,$(C_SRC_NODIR))
 all:$(C_OBJ)
 	@echo "linking object to $(TARGET).elf"
 	@$(CC) $(C_OBJ) -o $(TARGET).elf -Wl,-Map=$(TARGET).map $(LFLAGS)
-	@size $(TARGET).elf
+	@size $(TARGET).elf # 打印 elf 文件 size 信息
+	@echo "generating binary file $(TARGET).bin"
+	@objcopy -O binary $(TARGET).elf $(TARGET).bin
+	@echo "generating hex file $(TARGET).hex"
+	@objcopy -O ihex $(TARGET).elf $(TARGET).hex
+	@echo "generating assembly file $(TARGET).asm"
+	@objdump -d $(TARGET).elf > $(TARGET).asm
 
 $(OBJ_DIR)/%.o:%.$(EXT)
 	@mkdir -p obj
@@ -69,6 +75,10 @@ $(OBJ_DIR)/%.d:%.$(EXT)
 clean:
 	-rm -f obj/*
 	-rm -f $(shell find ./ -name '*.elf')
+	-rm -f $(shell find ./ -name '*.map')
+	-rm -f $(shell find ./ -name '*.bin')
+	-rm -f $(shell find ./ -name '*.hex')
+	-rm -f $(shell find ./ -name '*.asm')
 
 rebuild: clean all
 

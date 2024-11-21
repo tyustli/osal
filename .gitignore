@@ -6,6 +6,8 @@
 *.ko
 *.obj
 *.elf
+*.bin
+*.hex
 
 # Linker output
 *.ilk
@@ -54,3 +56,4 @@ tags
 .tags
 obj/
 build/
+linux-osal-example.asm
