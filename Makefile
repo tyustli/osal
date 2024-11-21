@@ -52,7 +52,7 @@ C_DEP			= $(patsubst %.$(EXT), $(OBJ_DIR)/%.d,$(C_SRC_NODIR))
 
 all:$(C_OBJ)
 	@echo "linking object to $(TARGET).elf"
-	@$(CC) $(C_OBJ) -o $(TARGET).elf $(LFLAGS)
+	@$(CC) $(C_OBJ) -o $(TARGET).elf -Wl,-Map=$(TARGET).map $(LFLAGS)
 	@size $(TARGET).elf
 
 $(OBJ_DIR)/%.o:%.$(EXT)
